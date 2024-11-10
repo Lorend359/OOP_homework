@@ -26,16 +26,16 @@ def load_data_from_json(file_path):
     return categories
 
 
-if __name__ == "__main__":
-    base_dir = os.path.dirname(os.path.dirname(__file__))
-    json_file_path = os.path.join(base_dir, "data", "products.json")
-
-    categories = load_data_from_json(json_file_path)
-
-    for category in categories:
-        print(f"Категория: {category.name}")
-        print(f"Описание: {category.description}")
-        print("Продукты:")
-        for product in category.products:
-            print(f"  - {product.name}: {product.description}, Цена: {product.price}, Количество: {product.quantity}")
-        print()
+# if __name__ == "__main__":
+#     base_dir = os.path.dirname(os.path.dirname(__file__))
+#     json_file_path = os.path.join(base_dir, "data", "products.json")
+#
+#     categories = load_data_from_json(json_file_path)
+#
+#     for category in categories:
+#         print(f"Категория: {category.name}")
+#         print(f"Описание: {category.description}")
+#         print("Продукты:")
+#         for product in category.products:
+#             print(f"  - {product.name}: {product.description}, Цена: {product.price}, Количество: {product.quantity}")
+#         print()

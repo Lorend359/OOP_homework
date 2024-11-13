@@ -27,7 +27,7 @@ class Product:
             return
         if value < self.__price:
             confirm = input("Вы действительно хотите понизить цену? (y/n): ")
-            if confirm.lower() != 'y':
+            if confirm.lower() != "y":
                 return
         self.__price = value
 
@@ -52,6 +52,7 @@ class Product:
             existing_products.append(new_product)
         return new_product
 
+
 class Category:
     """Класс, представляющий категорию продуктов."""
 
@@ -74,8 +75,7 @@ class Category:
     def products(self):
         """Возвращает строку с продуктами в категории."""
         return "\n".join(
-            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт."
-            for product in self._products
+            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт." for product in self._products
         )
 
     @property
@@ -87,6 +87,7 @@ class Category:
     def product_count(self):
         """Возвращает количество продуктов в категории."""
         return len(self._products)
+
 
 # if __name__ == "__main__":
 #     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)

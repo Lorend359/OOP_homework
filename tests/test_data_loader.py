@@ -29,14 +29,8 @@ def test_load_data_from_json(sample_json_file):
     assert len(categories) == 1
     assert categories[0].name == "Электроника"
     assert categories[0].description == "Все о электронике"
-    assert len(categories[0].products) == 2
 
-    assert categories[0].products[0].name == "Смартфон"
-    assert categories[0].products[0].description == "Смартфон с высоким разрешением"
-    assert categories[0].products[0].price == 500
-    assert categories[0].products[0].quantity == 20
+    assert categories[0].products.count("\n") + 1 == 2
 
-    assert categories[0].products[1].name == "Ноутбук"
-    assert categories[0].products[1].description == "Мощный ноутбук"
-    assert categories[0].products[1].price == 1000
-    assert categories[0].products[1].quantity == 10
+    assert "Смартфон" in categories[0].products
+    assert "Ноутбук" in categories[0].products

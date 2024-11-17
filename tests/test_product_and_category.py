@@ -48,9 +48,9 @@ def test_product_initialization():
 
 
 def test_product_count(setup_categories_and_products):
-    category1, category2, product1, product2, product3, product4 = setup_categories_and_products
-    assert len(category1.products) == 3
-    assert len(category2.products) == 1
+    category1, category2, _, _, _, _ = setup_categories_and_products
+    assert category1.product_count == 3
+    assert category2.product_count == 1
     assert Category.total_product_count == 4
 
 
@@ -133,9 +133,9 @@ def test_product_iterator(setup_categories_and_products):
     category1, _, _, _, _, _ = setup_categories_and_products
     iterator = iter(category1)
 
-    assert next(iterator) == category1.products[0]
-    assert next(iterator) == category1.products[1]
-    assert next(iterator) == category1.products[2]
+    assert next(iterator) == category1._products[0]  # Используйте _products
+    assert next(iterator) == category1._products[1]
+    assert next(iterator) == category1._products[2]
 
     with pytest.raises(StopIteration):
         next(iterator)

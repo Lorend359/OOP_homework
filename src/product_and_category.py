@@ -88,8 +88,8 @@ class Category:
 
     @property
     def products(self):
-        """Возвращает список продуктов в категории."""
-        return self._products
+        """Возвращает строку со всеми продуктами в категории."""
+        return "\n".join(str(product) for product in self._products)
 
     @property
     def product_count(self):
@@ -120,8 +120,8 @@ class ProductIterator:
 
     def __next__(self):
         """Возвращает следующий продукт в категории."""
-        if self._index < len(self._category.products):
-            product = self._category.products[self._index]
+        if self._index < len(self._category._products):  # Используем _products
+            product = self._category._products[self._index]  # Используем _products
             self._index += 1
             return product
         else:

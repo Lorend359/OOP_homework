@@ -20,11 +20,7 @@ def load_data_from_json(file_path):
             for product in category_data["products"]
         ]
 
-        # Создание категории с продуктами
         category = Category(name=category_data["name"], description=category_data["description"], products=products)
-
-        # Не заменяем _products на строку, оставляем его как список
-        # category._products = products  # Это не нужно, все уже настроено в конструкции Category
 
         categories.append(category)
 

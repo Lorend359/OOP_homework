@@ -21,6 +21,7 @@ def load_data_from_json(file_path):
         ]
 
         category = Category(name=category_data["name"], description=category_data["description"], products=products)
+
         categories.append(category)
 
     return categories
@@ -36,6 +37,5 @@ def load_data_from_json(file_path):
 #         print(f"Категория: {category.name}")
 #         print(f"Описание: {category.description}")
 #         print("Продукты:")
-#         for product in category.products:
-#             print(f"  - {product.name}: {product.description}, Цена: {product.price}, Количество: {product.quantity}")
+#         print(category.products)  # Теперь правильно обращаемся к строке продуктов
 #         print()

@@ -37,5 +37,5 @@ def load_data_from_json(file_path):
 #         print(f"Категория: {category.name}")
 #         print(f"Описание: {category.description}")
 #         print("Продукты:")
-#         print(category.products)  # Теперь правильно обращаемся к строке продуктов
+#         print(category.products)
 #         print()

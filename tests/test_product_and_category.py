@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.product_and_category import Category, Product
+from src.product_and_category import Category, LawnGrass, Product, Smartphone
 
 
 @pytest.fixture(autouse=True)
@@ -133,9 +133,59 @@ def test_product_iterator(setup_categories_and_products):
     category1, _, _, _, _, _ = setup_categories_and_products
     iterator = iter(category1)
 
-    assert next(iterator) == category1._products[0]  # Используйте _products
+    assert next(iterator) == category1._products[0]
     assert next(iterator) == category1._products[1]
     assert next(iterator) == category1._products[2]
 
     with pytest.raises(StopIteration):
         next(iterator)
+
+
+@pytest.fixture
+def setup_smartphones():
+    smartphone1 = Smartphone(
+        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5, 95.5, "S23 Ultra", 256, "Серый"
+    )
+    smartphone2 = Smartphone("Iphone 15", "512GB, Gray space", 210000.0, 8, 98.2, "15", 512, "Gray space")
+    return smartphone1, smartphone2
+
+
+@pytest.fixture
+def setup_lawn_grasses():
+    grass1 = LawnGrass("Газонная трава", "Элитная трава для газона", 500.0, 20, "Россия", 7, "Зеленый")
+    grass2 = LawnGrass("Газонная трава 2", "Выносливая трава", 450.0, 15, "США", 5, "Темно-зеленый")
+    return grass1, grass2
+
+
+def test_smartphone_initialization(setup_smartphones):
+    smartphone1, smartphone2 = setup_smartphones
+    assert smartphone1.name == "Samsung Galaxy S23 Ultra"
+    assert smartphone1.efficiency == 95.5
+    assert smartphone1.model == "S23 Ultra"
+    assert smartphone1.memory == 256
+    assert smartphone1.color == "Серый"
+
+
+def test_lawn_grass_initialization(setup_lawn_grasses):
+    grass1, grass2 = setup_lawn_grasses
+    assert grass1.name == "Газонная трава"
+    assert grass1.country == "Россия"
+    assert grass1.germination_period == 7
+    assert grass1.color == "Зеленый"
+
+
+def test_smartphone_str_method(setup_smartphones):
+    smartphone1, _ = setup_smartphones
+    expected_str = (
+        "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт., "
+        "Эффективность: 95.5, Модель: S23 Ultra, Встроенная память: 256, Цвет: Серый"
+    )
+    assert str(smartphone1) == expected_str
+
+
+def test_lawn_grass_str_method(setup_lawn_grasses):
+    grass1, _ = setup_lawn_grasses
+    expected_str = (
+        "Газонная трава, 500.0 руб. Остаток: 20 шт., " "Страна: Россия, Срок прорастания: 7 дней, Цвет: Зеленый"
+    )
+    assert str(grass1) == expected_str

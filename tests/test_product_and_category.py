@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.product_and_category import Category, LawnGrass, Product, Smartphone
+from src.product_and_category import Category, LawnGrass, Order, Product, Smartphone
 
 
 @pytest.fixture(autouse=True)
@@ -189,3 +189,37 @@ def test_lawn_grass_str_method(setup_lawn_grasses):
         "Газонная трава, 500.0 руб. Остаток: 20 шт., " "Страна: Россия, Срок прорастания: 7 дней, Цвет: Зеленый"
     )
     assert str(grass1) == expected_str
+
+
+@pytest.fixture
+def setup_order():
+    product = Product("Тестовая Продукция", "Описание продукта", 100.0, 10)
+    order = Order(product, 2)
+    return order, product
+
+
+def test_order_initialization(setup_order):
+    order, product = setup_order
+    assert order.product == product
+    assert order.quantity == 2
+    assert order.total_price == product.price * order.quantity
+
+
+def test_order_description(setup_order):
+    order, product = setup_order
+    expected_description = f"Заказ: {product.name}, Количество: 2, Итоговая стоимость: 200.00 руб."
+    assert order.get_description() == expected_description
+
+
+def test_order_with_smartphone():
+    smartphone = Smartphone(
+        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5, 95.5, "S23 Ultra", 256, "Серый"
+    )
+    order = Order(smartphone, 1)
+    assert order.total_price == smartphone.price
+
+
+def test_order_with_lawn_grass():
+    lawn_grass = LawnGrass("Газонная трава", "Элитная трава для газона", 500.0, 20, "Россия", 7, "Зеленый")
+    order = Order(lawn_grass, 3)
+    assert order.total_price == lawn_grass.price * 3

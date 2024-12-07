@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.product_and_category import Category, LawnGrass, Order, Product, Smartphone
+from src.product_and_category import Category, LawnGrass, Order, Product, Smartphone, ZeroQuantityError
 
 
 @pytest.fixture(autouse=True)
@@ -223,3 +223,76 @@ def test_order_with_lawn_grass():
     lawn_grass = LawnGrass("Газонная трава", "Элитная трава для газона", 500.0, 20, "Россия", 7, "Зеленый")
     order = Order(lawn_grass, 3)
     assert order.total_price == lawn_grass.price * 3
+
+
+def test_product_initialization_with_zero_quantity():
+    with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+        Product("Test Product", "Description", 100.0, 0)
+
+
+def test_category_middle_price_with_products(setup_categories_and_products):
+    category1, _, _, _, _, _ = setup_categories_and_products
+    total_quantity = sum(product.quantity for product in category1._products)
+    assert category1.middle_price() == ((180000.0 * 5 + 210000.0 * 8 + 31000.0 * 14) / total_quantity)
+
+
+def test_category_middle_price_with_no_products():
+    category = Category("Пустая категория", "Без товаров")
+    assert category.middle_price() == 0.0
+
+
+def test_add_existing_product(setup_categories_and_products):
+    category1, _, _, _, _, _ = setup_categories_and_products
+    existing_product = category1._products[0]
+    initial_product_count = len(category1._products)
+
+    category1.add_product(existing_product)
+
+    assert len(category1._products) == initial_product_count
+    assert category1._products.count(existing_product) == 1
+
+
+def test_new_product_update_existing(setup_categories_and_products):
+    product_info = {
+        "name": "Samsung Galaxy S23 Ultra",
+        "description": "256GB, Серый цвет, 200MP камера",
+        "price": 180000.0,
+        "quantity": 5,
+    }
+    existing_products = []
+
+    product = Product.new_product(product_info, existing_products)
+    assert len(existing_products) == 1
+    assert existing_products[0].name == "Samsung Galaxy S23 Ultra"
+
+    product_info_update = {
+        "name": "Samsung Galaxy S23 Ultra",
+        "description": "256GB, Черный цвет, 200MP камера",
+        "price": 185000.0,
+        "quantity": 3,
+    }
+    updated_product = Product.new_product(product_info_update, existing_products)
+
+    assert existing_products[0].price == 185000.0
+    assert existing_products[0]._quantity == 8
+
+
+def test_add_product_with_valid_quantity(setup_categories_and_products):
+    category1, _, _, _, _, _ = setup_categories_and_products
+    product_valid = Product("Valid Product", "Description", 100.0, 10)
+
+    with patch("builtins.print") as mock_print:
+        category1.add_product(product_valid)
+        mock_print.assert_any_call(f"Товар 'Valid Product' успешно добавлен в категорию.")
+        mock_print.assert_any_call("Обработка добавления товара в категорию завершена.")
+
+
+def test_add_product_with_non_zero_quantity():
+    product_valid = Product("Valid Product", "Description", 100.0, 10)
+    order = Order(product_valid, 5)
+
+    with patch("builtins.print") as mock_print:
+        order.add_product(product_valid)
+
+        mock_print.assert_any_call(f"Товар '{product_valid.name}' успешно добавлен в заказ.")
+        mock_print.assert_any_call("Обработка добавления товара в заказ завершена.")

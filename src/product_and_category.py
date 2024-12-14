@@ -33,6 +33,9 @@ class Product(MixinInitLogger, BaseProduct):
     """Класс, представляющий продукт."""
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
         super().__init__(name, description, price, quantity)
         self.name = name
         self.description = description
@@ -131,14 +134,20 @@ class Category(BaseEntity):
         Category.total_product_count += len(self._products)
 
     def add_product(self, product):
-        """Добавляет продукт в категорию."""
-        if not isinstance(product, Product):
-            raise TypeError(
-                f"Нельзя добавить объект типа {type(product).__name__}. Ожидался продукт или его наследник."
-            )
-
-        self._products.append(product)
-        Category.total_product_count += 1
+        try:
+            if product.quantity <= 0:
+                raise ZeroQuantityError("Товар с нулевым или отрицательным количеством не может быть добавлен")
+            if product in self._products:
+                print(f"Продукт '{product.name}' уже существует в категории.")
+                return
+            self._products.append(product)
+            Category.total_product_count += 1
+            print(f"Товар '{product.name}' успешно добавлен в категорию.")
+        except ZeroQuantityError as e:
+            print(f"Ошибка: {e}")
+            raise
+        finally:
+            print("Обработка добавления товара в категорию завершена.")
 
     @property
     def products(self):
@@ -163,6 +172,23 @@ class Category(BaseEntity):
         """Возвращает описание категории."""
         return self.description
 
+    def middle_price(self):
+        """Метод для подсчета средней цены всех товаров в категории."""
+        try:
+            total_price = sum(product.price * product.quantity for product in self._products)
+            total_quantity = sum(product.quantity for product in self._products)
+
+            if total_quantity == 0:
+                raise ZeroDivisionError("В категории нет товаров или товары с нулевым количеством.")
+
+            return total_price / total_quantity
+
+        except ZeroDivisionError:
+            return 0.0
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")
+            return 0.0
+
 
 class Order(BaseEntity):
     """Класс, представляющий заказ на продукт."""
@@ -179,6 +205,19 @@ class Order(BaseEntity):
         return (
             f"Заказ: {self.product.name}, Количество: {self.quantity}, Итоговая стоимость: {self.total_price:.2f} руб."
         )
+
+    def add_product(self, product):
+        """Добавляет продукт в заказ."""
+        try:
+            if product.quantity == 0:
+                raise ZeroQuantityError()
+            print(f"Товар '{product.name}' успешно добавлен в заказ.")
+        except ZeroQuantityError as e:
+            print(f"Ошибка: {e}")
+        else:
+            print("Товар был добавлен в заказ без ошибок.")
+        finally:
+            print("Обработка добавления товара в заказ завершена.")
 
 
 class ProductIterator:
@@ -259,47 +298,30 @@ class LawnGrass(Product):
         )
 
 
+class ZeroQuantityError(Exception):
+    """Исключение, которое возникает при попытке добавить товар с нулевым количеством."""
+
+    def __init__(self, message="Товар с нулевым количеством не может быть добавлен"):
+        self.message = message
+        super().__init__(self.message)
+
+
 # if __name__ == '__main__':
+#     try:
+#         product_invalid = Product("Бракованный товар", "Неверное количество", 1000.0, 0)
+#     except ValueError as e:
+#         print(
+#             "Возникла ошибка ValueError прерывающая работу программы при попытке добавить продукт с нулевым количеством")
+#     else:
+#         print("Не возникла ошибка ValueError при попытке добавить продукт с нулевым количеством")
+#
 #     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
 #     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
 #     product3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
 #
-#     print(product1.name)
-#     print(product1.description)
-#     print(product1.price)
-#     print(product1.quantity)
+#     category1 = Category("Смартфоны", "Категория смартфонов", [product1, product2, product3])
 #
-#     print(product2.name)
-#     print(product2.description)
-#     print(product2.price)
-#     print(product2.quantity)
+#     print(category1.middle_price())
 #
-#     print(product3.name)
-#     print(product3.description)
-#     print(product3.price)
-#     print(product3.quantity)
-#
-#     category1 = Category("Смартфоны",
-#                          "Смартфоны, как средство не только коммуникации,
-#                          но и получения дополнительных функций для удобства жизни",
-#                          [product1, product2, product3])
-#
-#     print(category1.name == "Смартфоны")
-#     print(category1.description)
-#     print(len(category1.products))
-#     print(category1.category_count)
-#     print(category1.product_count)
-#
-#     product4 = Product("55\" QLED 4K", "Фоновая подсветка", 123000.0, 7)
-#     category2 = Category("Телевизоры",
-#                          "Современный телевизор,
-#                          который позволяет наслаждаться просмотром, станет вашим другом и помощником",
-#                          [product4])
-#
-#     print(category2.name)
-#     print(category2.description)
-#     print(len(category2.products))
-#     print(category2.products)
-#
-#     print(Category.category_count)
-#     print(Category.product_count)
+#     category_empty = Category("Пустая категория", "Категория без продуктов", [])
+#     print(category_empty.middle_price())
